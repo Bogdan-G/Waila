@@ -1,0 +1,11 @@
+*.orig
+.gradle
+gradle
+build
+eclipse
+out
+*.iml
+*.ipr
+*.iws
+src/main/java/net/*
+fb
