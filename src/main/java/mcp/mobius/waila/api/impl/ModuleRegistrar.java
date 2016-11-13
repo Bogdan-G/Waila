@@ -51,7 +51,9 @@ public class ModuleRegistrar implements IWailaRegistrar {
 	public LinkedHashMap<String, ArrayList<IWailaFMPProvider>> tailFMPProviders = new LinkedHashMap<String, ArrayList<IWailaFMPProvider>>();	
 
 	public LinkedHashMap<String, ArrayList<IWailaFMPDecorator>> FMPClassDecorators = new LinkedHashMap<String, ArrayList<IWailaFMPDecorator>>();	
-
+	
+	public LinkedHashMap<Class, HashSet<String>> syncedNBTKeys = new LinkedHashMap<Class, HashSet<String>>();
+	
 	public LinkedHashMap<String, LinkedHashMap <String, LinkedHashMap <String, String>>> wikiDescriptions = new LinkedHashMap<String, LinkedHashMap <String, LinkedHashMap <String, String>>>();
 	public LinkedHashMap<Class, ArrayList<IWailaSummaryProvider>> summaryProviders = new LinkedHashMap<Class, ArrayList<IWailaSummaryProvider>>();
 	
@@ -210,7 +212,16 @@ public class ModuleRegistrar implements IWailaRegistrar {
 		if (providers.contains(dataProvider)) return;		
 		
 		target.get(clazz).add(dataProvider);		
-	}
+	}	
+	
+	@Deprecated
+	@Override
+	public void registerSyncedNBTKey(String key, Class target){
+		if (!this.syncedNBTKeys.containsKey(target))
+			this.syncedNBTKeys.put(target, new HashSet<String>());
+		
+		this.syncedNBTKeys.get(target).add(key);		
+	}	
 	
 	@Override
 	public void registerTooltipRenderer(String name, IWailaTooltipRenderer renderer){
@@ -308,6 +319,16 @@ public class ModuleRegistrar implements IWailaRegistrar {
 		Map<Integer, List<T>> returnList = new TreeMap<Integer, List<T>>();
 		returnList.put(0, target.get(name));
 		return returnList;		
+	}		
+	
+	@Deprecated
+	public HashSet<String> getSyncedNBTKeys(Object target){
+		HashSet<String> returnList = new HashSet<String>();
+		for (Class clazz : this.syncedNBTKeys.keySet())
+			if (clazz.isInstance(target))
+				returnList.addAll(this.syncedNBTKeys.get(clazz));
+				
+		return returnList;		
 	}
 	
 	/* HAS METHODS */
@@ -385,7 +406,15 @@ public class ModuleRegistrar implements IWailaRegistrar {
 	
 	public boolean hasSummaryProvider(Class item){
 		return this.summaryProviders.containsKey(item);
-	}
+	}	
+	
+	@Deprecated
+	public boolean hasSyncedNBTKeys(Object target){
+		for (Class clazz : this.syncedNBTKeys.keySet())
+			if (clazz.isInstance(target))
+				return true;
+		return false;
+	}		
 	
 	/* ----------------- */
 	/*

@@ -6,9 +6,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -31,7 +30,7 @@ public class HUDHandlerTank implements IWailaDataProvider {
 		IFluidHandler handler = (IFluidHandler)accessor.getTileEntity();
 		if (handler == null) return currenttip;
 		
-		FluidTankInfo[] tanks = handler.getTankInfo(EnumFacing.DOWN);
+		FluidTankInfo[] tanks = handler.getTankInfo(ForgeDirection.UNKNOWN);
 		if (tanks.length != 1) return currenttip;
 		
 		FluidStack  fluid = tanks[0].fluid; 
@@ -55,7 +54,7 @@ public class HUDHandlerTank implements IWailaDataProvider {
 		IFluidHandler handler = (IFluidHandler)accessor.getTileEntity();
 		if (handler == null) return currenttip;
 		
-		FluidTankInfo[] tanks = handler.getTankInfo(EnumFacing.DOWN);
+		FluidTankInfo[] tanks = handler.getTankInfo(ForgeDirection.UNKNOWN);
 		if (tanks.length != 1) return currenttip;
 		
 		if(tanks[0].fluid != null)
@@ -72,7 +71,7 @@ public class HUDHandlerTank implements IWailaDataProvider {
 	}
 
 	@Override
-	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
+	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
 		if (te != null)
 			te.writeToNBT(tag);
 		return tag;

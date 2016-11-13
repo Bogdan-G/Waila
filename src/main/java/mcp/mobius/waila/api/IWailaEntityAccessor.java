@@ -19,7 +19,7 @@ public interface IWailaEntityAccessor {
 	World        		 getWorld();
 	EntityPlayer 		 getPlayer();
 	Entity               getEntity();
-	MovingObjectPosition getMOP();
+	MovingObjectPosition getPosition();
 	Vec3                 getRenderingPosition();
 	NBTTagCompound       getNBTData();
 	int                  getNBTInteger(NBTTagCompound tag, String keyname);

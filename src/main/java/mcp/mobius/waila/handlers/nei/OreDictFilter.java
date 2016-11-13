@@ -1,6 +1,5 @@
 package mcp.mobius.waila.handlers.nei;
-/*
-import java.util.Locale;
+
 import java.util.regex.Pattern;
 
 import net.minecraft.item.ItemStack;
@@ -36,7 +35,7 @@ public class OreDictFilter implements ISearchProvider{
         	int[] ids = OreDictionary.getOreIDs(itemstack);
         	boolean found = false;
         	for (int id : ids){
-        		if (pattern.matcher(OreDictionary.getOreName(id).toLowerCase(Locale.US)).find()){
+        		if (pattern.matcher(OreDictionary.getOreName(id).toLowerCase()).find()){
         			found = true;
         		}
         	}
@@ -45,4 +44,3 @@ public class OreDictFilter implements ISearchProvider{
 		
 	}
 }
-*/

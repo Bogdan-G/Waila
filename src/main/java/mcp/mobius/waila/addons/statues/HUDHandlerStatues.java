@@ -6,7 +6,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -26,7 +25,7 @@ public class HUDHandlerStatues implements IWailaDataProvider {
 		try {
 			String skinName = (String)StatuesModule.skinName.get(accessor.getTileEntity());
 			if (skinName.equals("")){
-				TileEntity belowEnt = accessor.getWorld().getTileEntity(new BlockPos(accessor.getPosition().getX(), accessor.getPosition().down().getY(), accessor.getPosition().getZ()));
+				TileEntity belowEnt = accessor.getWorld().getTileEntity(accessor.getPosition().blockX, accessor.getPosition().blockY - 1, accessor.getPosition().blockZ);
 				if (StatuesModule.TileEntityStatue.isInstance(belowEnt))
 					skinName = (String)StatuesModule.skinName.get(belowEnt);
 			}
@@ -70,7 +69,7 @@ public class HUDHandlerStatues implements IWailaDataProvider {
 	}
 
 	@Override
-	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
+	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
 		if (te != null)
 			te.writeToNBT(tag);
 		return tag;

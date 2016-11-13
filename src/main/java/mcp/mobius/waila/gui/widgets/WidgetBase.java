@@ -43,7 +43,7 @@ public abstract class WidgetBase implements IWidget {
 	public WidgetBase(){
 		this.setParent(null);
 		this.mc  = Minecraft.getMinecraft();	
-		this.rez = new ScaledResolution(mc);
+		this.rez = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight); 
 		this.texManager = this.mc.renderEngine;
 		this.setGeometry(new WidgetGeometry(0, 0, 50, 50, CType.ABSXY, CType.ABSXY));
 	}
@@ -51,7 +51,7 @@ public abstract class WidgetBase implements IWidget {
 	public WidgetBase(IWidget parent){
 		this.setParent(parent);
 		this.mc  = Minecraft.getMinecraft();
-		this.rez = new ScaledResolution(mc);
+		this.rez = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 		this.texManager = this.mc.renderEngine;
 		this.setGeometry(new WidgetGeometry(0, 0, 50, 50, CType.ABSXY, CType.ABSXY));
 	}
@@ -141,7 +141,7 @@ public abstract class WidgetBase implements IWidget {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, this.alpha);
-
+		
 		this.draw(this.getPos());
 		
 		/*
@@ -248,6 +248,7 @@ public abstract class WidgetBase implements IWidget {
     protected void saveGLState(){
 		hasBlending   = GL11.glGetBoolean(GL11.GL_BLEND);
 		hasLight      = GL11.glGetBoolean(GL11.GL_LIGHTING);
+    	boundTexIndex = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);  
     	GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
     	GL11.glPushMatrix();
     }
@@ -255,8 +256,10 @@ public abstract class WidgetBase implements IWidget {
     protected void loadGLState(){
     	if (hasBlending) GL11.glEnable(GL11.GL_BLEND); else GL11.glDisable(GL11.GL_BLEND);
     	if (hasLight) GL11.glEnable(GL11.GL_LIGHTING); else	GL11.glDisable(GL11.GL_LIGHTING);
+    	GL11.glBindTexture(GL11.GL_TEXTURE_2D, boundTexIndex);
     	GL11.glPopMatrix();
     	GL11.glPopAttrib();
+    	//GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
     
     @Override 

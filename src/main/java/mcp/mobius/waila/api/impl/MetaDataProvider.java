@@ -1,12 +1,20 @@
 package mcp.mobius.waila.api.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.IWailaBlock;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.IWailaEntityProvider;
 import mcp.mobius.waila.cbcore.Layout;
 import mcp.mobius.waila.network.Message0x01TERequest;
 import mcp.mobius.waila.network.Message0x03EntRequest;
 import mcp.mobius.waila.network.WailaPacketHandler;
+import mcp.mobius.waila.utils.Constants;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -16,11 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import net.minecraftforge.common.config.Configuration;
 
 public class MetaDataProvider{
 	
@@ -38,6 +42,14 @@ public class MetaDataProvider{
 	public ItemStack identifyBlockHighlight(World world, EntityPlayer player, MovingObjectPosition mop, DataAccessorCommon accessor) {
 		Block block   = accessor.getBlock();
 		int   blockID = accessor.getBlockID();
+		
+		if (IWailaBlock.class.isInstance(block)){
+			try{
+				return ((IWailaBlock)block).getWailaStack(accessor, ConfigHandler.instance());
+			}catch (Throwable e){
+				WailaExceptionHandler.handleErr(e, block.getClass().toString(), null);
+			}
+		}
 
 		if(ModuleRegistrar.instance().hasStackProviders(block)){
 			for (List<IWailaDataProvider> providerList : ModuleRegistrar.instance().getStackProviders(block).values()){
@@ -62,6 +74,12 @@ public class MetaDataProvider{
 			accessor.resetTimer();
 			HashSet<String> keys = new HashSet<String>();
 			
+			if (ModuleRegistrar.instance().hasSyncedNBTKeys(block))
+				keys.addAll(ModuleRegistrar.instance().getSyncedNBTKeys(block));
+
+			if (ModuleRegistrar.instance().hasSyncedNBTKeys(accessor.getTileEntity()))
+				keys.addAll(ModuleRegistrar.instance().getSyncedNBTKeys(accessor.getTileEntity()));			
+			
 			if (keys.size() != 0 || ModuleRegistrar.instance().hasNBTProviders(block) || ModuleRegistrar.instance().hasNBTProviders(accessor.getTileEntity()))
 				WailaPacketHandler.INSTANCE.sendToServer(new Message0x01TERequest(accessor.getTileEntity(), keys));
 			
@@ -75,6 +93,29 @@ public class MetaDataProvider{
 				WailaExceptionHandler.handleErr(e, this.getClass().getName(), null);
 			}			
 		}
+
+		/* Interface IWailaBlock */
+		if (IWailaBlock.class.isInstance(block)){
+			TileEntity entity = world.getTileEntity(mop.blockX, mop.blockY, mop.blockZ);
+			if (layout == Layout.HEADER)
+				try{				
+					return ((IWailaBlock)block).getWailaHead(itemStack, currenttip, accessor, ConfigHandler.instance());
+				} catch (Throwable e){
+					return WailaExceptionHandler.handleErr(e, block.getClass().toString(), currenttip);
+				}					
+			else if (layout == Layout.BODY)
+				try{					
+					return ((IWailaBlock)block).getWailaBody(itemStack, currenttip, accessor, ConfigHandler.instance());
+				} catch (Throwable e){
+					return WailaExceptionHandler.handleErr(e, block.getClass().toString(), currenttip);
+				}
+			else if (layout == Layout.FOOTER)
+				try{					
+					return ((IWailaBlock)block).getWailaTail(itemStack, currenttip, accessor, ConfigHandler.instance());
+				} catch (Throwable e){
+					return WailaExceptionHandler.handleErr(e, block.getClass().toString(), currenttip);
+				}				
+		}		
 
 		headBlockProviders.clear();
 		bodyBlockProviders.clear();
@@ -137,6 +178,13 @@ public class MetaDataProvider{
 		
 		if (accessor.getEntity() != null && Waila.instance.serverPresent && accessor.isTimeElapsed(250)){
 			accessor.resetTimer();
+			HashSet<String> keys = new HashSet<String>();
+
+			if (ModuleRegistrar.instance().hasSyncedNBTKeys(accessor.getEntity()))
+				keys.addAll(ModuleRegistrar.instance().getSyncedNBTKeys(accessor.getEntity()));			
+			
+			if (keys.size() != 0 || ModuleRegistrar.instance().hasNBTEntityProviders(accessor.getEntity()))
+				WailaPacketHandler.INSTANCE.sendToServer(new Message0x03EntRequest(accessor.getEntity(), keys));			
 			
 		} else if (accessor.getEntity() != null && !Waila.instance.serverPresent && accessor.isTimeElapsed(250)) {
 			

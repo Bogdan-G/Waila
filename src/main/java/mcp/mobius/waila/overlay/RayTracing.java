@@ -21,7 +21,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -50,7 +49,7 @@ public class RayTracing {
 			return;
 		}
 		
-		Entity viewpoint = mc.getRenderViewEntity();
+		EntityLivingBase viewpoint = mc.renderViewEntity;
 		if (viewpoint == null) return;
 			
 		this.target      = this.rayTrace(viewpoint, mc.playerController.getBlockReachDistance(), 0);
@@ -80,9 +79,9 @@ public class RayTracing {
 		return this.targetEntity;
 	}	
 	
-    public MovingObjectPosition rayTrace(Entity entity, double par1, float par3)
+    public MovingObjectPosition rayTrace(EntityLivingBase entity, double par1, float par3)
     {
-        Vec3 vec3  = entity.getPositionEyes(par3);
+        Vec3 vec3  = entity.getPosition(par3);
         Vec3 vec31 = entity.getLook(par3);
         Vec3 vec32 = vec3.addVector(vec31.xCoord * par1, vec31.yCoord * par1, vec31.zCoord * par1);
         
@@ -140,13 +139,15 @@ public class RayTracing {
     		return items;
     	
     	EntityPlayer player = mc.thePlayer;
-    	World world = mc.theWorld;
-		BlockPos pos = target.getBlockPos();
-
+    	World world = mc.theWorld; 
+    	
+        int x = this.target.blockX;
+        int y = this.target.blockY;
+        int z = this.target.blockZ;
         //int   blockID         = world.getBlockId(x, y, z);
         //Block mouseoverBlock  = Block.blocksList[blockID];
-        Block mouseoverBlock  = world.getBlockState(pos).getBlock();
-        TileEntity tileEntity = world.getTileEntity(pos);
+        Block mouseoverBlock  = world.getBlock(x, y, z);
+        TileEntity tileEntity = world.getTileEntity(x, y, z); 
         if (mouseoverBlock == null) return items;
         
         if (ModuleRegistrar.instance().hasStackProviders(mouseoverBlock)){
@@ -183,9 +184,9 @@ public class RayTracing {
         if(items.size() > 0)
             return items;
 
-        if (world.getTileEntity(pos) == null){
+        if (world.getTileEntity(x, y, z) == null){
 	        try{
-	        	ItemStack block = new ItemStack(mouseoverBlock, 1, mouseoverBlock.getMetaFromState(world.getBlockState(pos)));
+	        	ItemStack block = new ItemStack(mouseoverBlock, 1, world.getBlockMetadata(x, y, z));
 
 	        	//System.out.printf("%s %s %s\n", block, block.getDisplayName(), block.getItemDamage());	        	
 	        	
@@ -205,7 +206,7 @@ public class RayTracing {
             return items;
 
         try{
-        ItemStack pick = mouseoverBlock.getPickBlock(this.target, world, pos, player);
+        ItemStack pick = mouseoverBlock.getPickBlock(this.target, world, x, y, z);
         if(pick != null)
             items.add(pick);
         }catch(Exception e){}
@@ -227,14 +228,14 @@ public class RayTracing {
         if(mouseoverBlock instanceof IShearable)
         {
             IShearable shearable = (IShearable)mouseoverBlock;
-            if(shearable.isShearable(new ItemStack(Items.shears), world, pos))
+            if(shearable.isShearable(new ItemStack(Items.shears), world, x, y, z))
             {
-                items.addAll(shearable.onSheared(new ItemStack(Items.shears), world, pos, 0));
+                items.addAll(shearable.onSheared(new ItemStack(Items.shears), world, x, y, z, 0));
             }
         }
         
         if(items.size() == 0)
-           items.add(0, new ItemStack(mouseoverBlock, 1, mouseoverBlock.getMetaFromState(world.getBlockState(pos))));
+           items.add(0, new ItemStack(mouseoverBlock, 1, world.getBlockMetadata(x, y, z)));
         
         return items;
     }

@@ -1,13 +1,13 @@
 package mcp.mobius.waila.api.impl;
 
-import mcp.mobius.waila.api.IWailaFMPAccessor;
-import mcp.mobius.waila.utils.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import mcp.mobius.waila.api.IWailaFMPAccessor;
+import mcp.mobius.waila.utils.NBTUtil;
 
 public class DataAccessorFMP implements IWailaFMPAccessor {
 	
@@ -32,7 +32,7 @@ public class DataAccessorFMP implements IWailaFMPAccessor {
 		this.world      = _world;
 		this.player     = _player;
 		this.mop        = _mop;
-		this.entity     = world.getTileEntity(_mop.getBlockPos());
+		this.entity     = world.getTileEntity(_mop.blockX, _mop.blockY, _mop.blockZ);
 		this.partialNBT = _partialNBT;
 		this.id         = id;
 		this.renderingvec = renderVec;
@@ -106,7 +106,7 @@ public class DataAccessorFMP implements IWailaFMPAccessor {
 		int y = tag.getInteger("y");
 		int z = tag.getInteger("z");
 		
-		if (x == this.mop.getBlockPos().getX() && y == this.mop.getBlockPos().getY() && z == this.mop.getBlockPos().getZ())
+		if (x == this.mop.blockX && y == this.mop.blockY && z == this.mop.blockZ)
 			return true;
 		else {
 			this.timeLastUpdate = System.currentTimeMillis() - 250;			

@@ -1,14 +1,18 @@
 package mcp.mobius.waila.overlay.tooltiprenderers;
 
-import mcp.mobius.waila.api.IWailaCommonAccessor;
-import mcp.mobius.waila.api.IWailaTooltipRenderer;
-import mcp.mobius.waila.overlay.DisplayUtil;
-import mcp.mobius.waila.overlay.IconUI;
-
-import java.awt.*;
-
 import static mcp.mobius.waila.api.SpecialChars.WailaIcon;
 import static mcp.mobius.waila.api.SpecialChars.WailaStyle;
+
+import java.awt.Dimension;
+
+import org.lwjgl.opengl.GL11;
+
+import mcp.mobius.waila.api.IWailaCommonAccessor;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaTooltipRenderer;
+import mcp.mobius.waila.overlay.DisplayUtil;
+import mcp.mobius.waila.overlay.OverlayRenderer;
+import mcp.mobius.waila.overlay.IconUI;
 
 public class TTRenderIcon implements IWailaTooltipRenderer {
 

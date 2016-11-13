@@ -1,21 +1,21 @@
 package mcp.mobius.waila.addons.vanillamc;
 
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import mcp.mobius.waila.api.IWailaDataProvider;
-import mcp.mobius.waila.api.SpecialChars;
-import mcp.mobius.waila.api.impl.ModuleRegistrar;
+import java.util.List;
+
+import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameData;
-
-import java.util.List;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
+import mcp.mobius.waila.api.SpecialChars;
+import mcp.mobius.waila.api.impl.ModuleRegistrar;
 
 public class HUDHandlerFurnace implements IWailaDataProvider {
 
@@ -37,12 +37,12 @@ public class HUDHandlerFurnace implements IWailaDataProvider {
 		String renderStr = "";
 		{
 			ItemStack stack = ItemStack.loadItemStackFromNBT(tag.getCompoundTagAt(0));
-			String name     = String.valueOf(GameData.getItemRegistry().getNameForObject(stack.getItem()));
+			String name     = GameData.getItemRegistry().getNameForObject(stack.getItem());
 			renderStr += SpecialChars.getRenderString("waila.stack", "1", name, String.valueOf(stack.stackSize), String.valueOf(stack.getItemDamage()));
 		}
 		{
 			ItemStack stack = ItemStack.loadItemStackFromNBT(tag.getCompoundTagAt(1));
-			String name     = String.valueOf(GameData.getItemRegistry().getNameForObject(stack.getItem()));
+			String name     = GameData.getItemRegistry().getNameForObject(stack.getItem());
 			renderStr += SpecialChars.getRenderString("waila.stack", "1", name, String.valueOf(stack.stackSize), String.valueOf(stack.getItemDamage()));
 		}
 		
@@ -50,7 +50,7 @@ public class HUDHandlerFurnace implements IWailaDataProvider {
 		
 		{
 			ItemStack stack = ItemStack.loadItemStackFromNBT(tag.getCompoundTagAt(2));
-			String name     = String.valueOf(GameData.getItemRegistry().getNameForObject(stack.getItem()));
+			String name     = GameData.getItemRegistry().getNameForObject(stack.getItem());
 			renderStr += SpecialChars.getRenderString("waila.stack", "1", name, String.valueOf(stack.stackSize), String.valueOf(stack.getItemDamage()));
 		}		
 		
@@ -65,7 +65,7 @@ public class HUDHandlerFurnace implements IWailaDataProvider {
 	}
 
 	@Override
-	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
+	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
 		if (te != null)
 			te.writeToNBT(tag);
 		return tag;
@@ -73,6 +73,6 @@ public class HUDHandlerFurnace implements IWailaDataProvider {
 	
 	public static void register(){
 		//ModuleRegistrar.instance().registerBodyProvider(new HUDHandlerFurnace(), TileEntityFurnace.class);
-		//ModuleRegistrar.instance().registerNBTProvider(new HUDHandlerFurnace(), TileEntityFurnace.class);
+		//ModuleRegistrar.instance().registerNBTProvider(new HUDHandlerFurnace(), TileEntityFurnace.class);	
 	}
 }
