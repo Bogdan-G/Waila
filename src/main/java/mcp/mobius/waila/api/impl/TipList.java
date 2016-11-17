@@ -9,10 +9,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.collections.impl.list.mutable.FastList;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+
 import mcp.mobius.waila.api.ITaggedList;
 
-public class TipList<E, T> extends ArrayList<E> implements ITaggedList<E, T> {
-	Map<E, Set<T>> tags = new HashMap();
+public class TipList<E, T> extends FastList<E> implements ITaggedList<E, T> {
+	Map<E, Set<T>> tags = new UnifiedMap();
 	
 	@Override
 	public boolean add(E e, T tag){
@@ -132,12 +135,20 @@ public class TipList<E, T> extends ArrayList<E> implements ITaggedList<E, T> {
 		return super.removeAll(c);
 	}
 	
-	@Override
+	//@Override
 	protected void removeRange(int fromIndex, int toIndex){
 		for (int i = fromIndex; i < toIndex; i++)
 			tags.remove(this.get(i));
 		
-		super.removeRange(fromIndex, toIndex);
+		//super.removeRange(fromIndex, toIndex);//func no in FastList?
+		//parse removeRange func of ArrayList
+		int numMoved = this.size - toIndex;
+		System.arraycopy(this.items, toIndex, this.items, fromIndex, numMoved);
+		int newSize = this.size - (toIndex-fromIndex);
+		for (int i = newSize; i < this.size; i++) {
+			this.items[i] = null;
+		}
+		this.size = newSize;
 	}
 	
 	@Override

@@ -25,14 +25,17 @@ import mcp.mobius.waila.utils.Constants;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import static mcp.mobius.waila.api.SpecialChars.*;
 
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
+import org.eclipse.collections.impl.list.mutable.FastList;
+
 public class Tooltip {
 	public static int TabSpacing = 8;
 	public static int IconSize   = 8; 
 	
-	ArrayList<ArrayList<String>>  lines = new ArrayList<ArrayList<String>>();
-	ArrayList<ArrayList<Integer>> sizes = new ArrayList<ArrayList<Integer>>();
-	ArrayList<Integer>     columnsWidth = new ArrayList<Integer>();
-	ArrayList<Integer>       columnsPos = new ArrayList<Integer>();	
+	List<ArrayList<String>>  lines = new FastList<ArrayList<String>>();
+	List sizes = new FastList<IntArrayList>();
+	IntArrayList     columnsWidth = new IntArrayList();
+	IntArrayList       columnsPos = new IntArrayList();	
 	
 	ArrayList<Renderable> elements    = new ArrayList<Renderable>();
 	ArrayList<Renderable> elements2nd = new ArrayList<Renderable>();
@@ -108,7 +111,7 @@ public class Tooltip {
 		for (String s : textData){
 			
 			ArrayList<String>  line = new ArrayList<String>(Arrays.asList(patternTab.split(s)));
-			ArrayList<Integer> size = new ArrayList<Integer>();
+			IntArrayList size = new IntArrayList();
 			for (String ss : line)
 				size.add(DisplayUtil.getDisplayWidth(ss));
 			
@@ -196,9 +199,18 @@ public class Tooltip {
 		return result;
 	}
 	
+	private static int cache_cfg_posx = 0;
+	private static int cache_cfg_posy = 0;
+	private static long cache_time = 0;
+	
 	private void computePositionAndSize(boolean hasIcon){
-		this.pos      = new Point(ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_POSX,0), 
-                                  ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_POSY,0));
+		long temp_time=System.currentTimeMillis();
+		if ((temp_time - cache_time)>10000L) {
+		cache_cfg_posx = ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_POSX,0);
+		cache_cfg_posy = ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_POSY,0);
+		cache_time = temp_time;
+		}
+		this.pos      = new Point(cache_cfg_posx, cache_cfg_posy);
 		this.hasIcon  = hasIcon;
 	
 		int paddingW = hasIcon ? 29 : 13;

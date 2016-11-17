@@ -9,3 +9,11 @@ out
 *.iws
 src/main/java/net/*
 fb
+/libs/mc-lib-deobf-mff.jar
+/libs/gson-2.6.2.jar
+/libs/guava-19.0.jar
+/libs/forge-1.7.10-10.13.5.0-1.7.10-universal.jar
+/libs/log4j-api-2.0-beta9.jar
+/libs/log4j-core-2.0-beta9.jar
+/libs/netty-all-4.0.10.Final.jar
+/libs/asm-all-5.0.3.jar

@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import static mcp.mobius.waila.api.SpecialChars.*;
@@ -55,15 +56,26 @@ public class WailaTickHandler{
 		OverlayRenderer.renderOverlay(); 
 	}	
 
+	private boolean cache_call_cfg_0 = ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_MODE, false);
+	private boolean cache_call_cfg_1 = ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_SHOW, false);
+	private long cache_call_cfg_update=0;
+	
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)	
 	public void tickClient(TickEvent.ClientTickEvent event) {
 		
-		if (!Keyboard.isKeyDown(KeyEvent.key_show.getKeyCode()) && 
-			!ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_MODE, false) &&
-			 ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_SHOW, false)){
+		if (event.phase == Phase.START) {
+		
+		if (!Keyboard.isKeyDown(KeyEvent.key_show.getKeyCode())) {
+		long temp_time=System.currentTimeMillis();
+		if ((temp_time - cache_call_cfg_update)>30000L) {
+			cache_call_cfg_0 = ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_MODE, false);
+			cache_call_cfg_1 = ConfigHandler.instance().getConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_SHOW, false);
+			cache_call_cfg_update=temp_time;
+		}
+		if (!cache_call_cfg_0 && cache_call_cfg_1) {
 			 ConfigHandler.instance().setConfig(Configuration.CATEGORY_GENERAL, Constants.CFG_WAILA_SHOW, false);	
-		}		
+		}}		
 		
 		
 		World world                 = mc.theWorld;
@@ -129,6 +141,8 @@ public class WailaTickHandler{
 					this.tooltip         = new Tooltip(this.currenttip, false);						
 				}
 			}
+		}
+		
 		}
 
 	}
